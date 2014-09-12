@@ -1,0 +1,15 @@
+{
+  "name": "nedb-restroute",
+  "private": true,
+  "version": "0.0.1",
+  "description": "nedb auto restful router generator",
+  "main": "index.js",
+  "scripts": {
+    "test": "test.js"
+  },
+  "author": "kalvinarts",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.9.0"
+  }
+}
