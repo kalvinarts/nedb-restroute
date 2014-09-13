@@ -61,9 +61,9 @@ _Note that there is not any option passed to the express.Router when the new ins
 
 Arguments:
 
-* nedbDataStore: a nedb DataStore for which to create the REST interface
-* options: see the [options section of this document](#options)
-* debug: see the [Debug flag section of this document](#debug-flag)
+* __nedbDataStore:__ a nedb DataStore for which to create the REST interface
+* __options:__ see the [options section of this document](#options)
+* __debug:__ see the [Debug flag section of this document](#debug-flag)
 
 ---
 
@@ -187,12 +187,12 @@ Any missing options will fall back to the defaults which are:
 
 The following additional options default to `undefined` if not set:
 
-__limit:__ _(Nubmer)_ Limits the number of returned documents
-__projection:__ _(Object)_ Filters fields in the returned documents (see the [nedb documentation](https://github.com/louischatriot/nedb#projections))
+* __limit:__ _(Nubmer)_ Limits the number of returned documents
+* __projection:__ _(Object)_ Filters fields in the returned documents (see the [nedb documentation](https://github.com/louischatriot/nedb#projections))
 
 ###Debug flag
 
-If you pass a third value to nedb-restroute function a `true` __debug__ argument will set to the _validate_, _success_, _error_ and _internalError_ functions. 
+If you pass a third value to nedb-restroute function a `true` __debug__ argument will be set to the _validate_, _success_, _error_ and _internalError_ functions. 
 
 ---
 
@@ -206,9 +206,9 @@ To query the REST interface for your DataStore send a JSON object with the follo
 }
 ```
 
-The __value__ of the `json` __property__ will be a stringifyied JSON of the __options__ object to query the DataStore ([You can read the explanation of this design decision below](#design-decisions)). All the examples below will omit the first level object with the `json` property and focus on its value, the __options__ object.
+The value of the `json` property will be a stringifyied JSON of the __options__ object to query the DataStore ([You can read the explanation of this design decision below](#design-decisions)). All the examples below will omit the first level object with the `json` property and focus on its value, the __options__ object.
 
-The response of all queries will be a JSON object with the query results set on a `data` property and errors set on an `error`property. This can be changed overriding the default options with a custom functions. [See above](#default-options)
+The response of all queries will be a JSON object with the query results set on a `data` property and errors set on an `error`property. This can be changed overriding the default options with custom functions. [See above](#default-options)
 
 ###GET (find, count)
 
@@ -224,6 +224,7 @@ The following options will __not__ take effect if the `count` option is set and 
 * __sort:__ _(Object)_ Sorts by field
 
 _\* Overriden by the server side option with same name if set._
+
 _\*\* Will only be overriden if the `limit` is greater than the server side `limit` option._
 
 To understand how these options work see the [nedb documentation](https://github.com/louischatriot/nedb#sorting-and-paginating)
@@ -231,16 +232,19 @@ To understand how these options work see the [nedb documentation](https://github
 All the nedb [operators](https://github.com/louischatriot/nedb#operators-lt-lte-gt-gte-in-nin-ne-exists-regex) and [logical operators](https://github.com/louischatriot/nedb#logical-operators-or-and-not-where) can be used with the only exception of the `$where` logical operator, to avoid evaluation of any javacsript code submited to the interface.
 
 ####Examples
+Get the number of people older than 18:
 ```json
-// Get the number of people older than 18
+
 {
 	"query": {
 		"age": {"$gt": 18}
 	},
 	"count": true
 }
+````
 
-// Get the names of the people younger than 30 an limit output to 50 filtering out the `_id`field
+Get the names of the people younger than 30 an limit output to 50 filtering out the `_id` field:
+```javascript
 {
 	"query": {
 		"age": {"$lt": 30}
@@ -256,7 +260,7 @@ All the nedb [operators](https://github.com/louischatriot/nedb#operators-lt-lte-
 * __query:__ _(Object)_ The document/documents to be inserted
 
 ####Expamples
-Put the document to be inserted in the query property
+Put the document to be inserted in the query property:
 
 ```json
 {
@@ -267,7 +271,7 @@ Put the document to be inserted in the query property
 }
 ```
 
-or for multiple documents
+Or for multiple documents:
 
 ```json
 {
@@ -302,8 +306,9 @@ or for multiple documents
 	"update": {
 		"$set": {"canDrink": true}
 	},
-	multi: true
+	"multi": true
 }
+````
 
 See the [nedb documentation](https://github.com/louischatriot/nedb#updating-documents) if you are not sure of how updates work.
 
@@ -334,11 +339,11 @@ If you think that something on this documentation is unclear or not well explain
 
 ###Design decisions
 
-After some testing I found out that all non `Number` values where casted to `String` by the express bodyParser so I decided to stringify the __options__ object and parse it on the server to avoid this issue.
+After some testing I found out that all `Number` values where casted to `String` by the express bodyParser so I decided to stringify the __options__ object and parse it on the server to avoid this issue.
 
 It's a real shame because I wanted to keep the querying as simple as posible from the begining... :(
 
-By the moment I have some work done on a browser and server modules to make as simple as posible the querying of the REST interface. When done will be added to the [Related modules](#related-modules) section.
+By the moment I have some work done on browser and server modules to make as simple as posible the querying of the REST interface. When done will be added to the [Related modules](#related-modules) section.
 
 ###MongoDB
 
@@ -375,7 +380,7 @@ will be very much apreciated ;)
 ```
 The MIT License (MIT)
 
-Copyright (c) 2014 Albert Calbet Martinez
+Copyright (c) 2014 Albert Calbet Martínez
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
