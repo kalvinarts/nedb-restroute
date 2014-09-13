@@ -325,7 +325,7 @@ See the [nedb documentation](https://github.com/louischatriot/nedb#updating-docu
 	"query": {
 		"party": "PP"
 	},
-	multi: true
+	"multi": true
 }
 ````
 
