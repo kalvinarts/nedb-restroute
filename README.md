@@ -241,7 +241,7 @@ Get the number of people older than 18:
 	},
 	"count": true
 }
-````
+```
 
 Get the names of the people younger than 30 an limit output to 50 filtering out the `_id` field:
 ```json
@@ -250,7 +250,7 @@ Get the names of the people younger than 30 an limit output to 50 filtering out 
 		"age": {"$lt": 30}
 	},
 	"projection": {"_id": 0},
-	"limit": 50,
+	"limit": 50
 }
 ``` 
 
