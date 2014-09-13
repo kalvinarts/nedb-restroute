@@ -8,7 +8,7 @@ module.exports = function REST (collection, options, debug) {
 		// Only listed methods will be routed
 		methods: ['get', 'post', 'put', 'delete'],
 		// Called before quering the database
-		validate: function (method, req, res) {
+		validate: function (method, req, res, debug) {
 			/*
 				Filter the req.body, check for some session
 				variable or whatever.
@@ -28,14 +28,14 @@ module.exports = function REST (collection, options, debug) {
 			}
 		},
 		// Called when the query is completed
-		success: function (method, data, req, res) {
+		success: function (method, data, req, res, debug) {
 			res.json({data: data})
 			res.end()
 			if (debug)
 				console.log(method, 'success', data)
 		},
 		// Called if there is any nedb error
-		error: function (method, err, req, res) {
+		error: function (method, err, req, res, debug) {
 			if (debug) {
 				res.json({error: err, method: method, type: 'nedb error'})
 				console.log(method, 'nedb error', err)
@@ -44,7 +44,7 @@ module.exports = function REST (collection, options, debug) {
 			}
 		},
 		// All the querying is in a try-catch block. If any error is thrown this function is called
-		internalError: function (method, err, req, res) {
+		internalError: function (method, err, req, res, debug) {
 			if (debug) {
 				res.json({error: err, method: method, type: 'internal error'})
 				console.log(method, 'internal error',err)
@@ -55,7 +55,7 @@ module.exports = function REST (collection, options, debug) {
 	}
 
 	// Validate options
-	if (!options || typeof docs != 'object') {
+	if (!options || typeof options != 'object') {
 		// Just set defaults
 		options = defaults
 	} else {
@@ -84,17 +84,15 @@ module.exports = function REST (collection, options, debug) {
 	
 	// Interface functions
 	function get (req, res) {
-		console.log('get process', req.query)
-
 		req.query.query = fixRegex(req.query.query)
 		
 		if (req.query.count) {
 			collection.count(req.query.query || {}, function (err, count) {
 				console.log('get callback', err, count)
 				if (err) {
-					options.error('get', err, req, res)
+					options.error('get', err, req, res, debug)
 				} else {
-					options.success('get', count, req, res)
+					options.success('get', count, req, res, debug)
 				}
 			})
 		} else {
@@ -157,11 +155,10 @@ module.exports = function REST (collection, options, debug) {
 
 			// Execute the query
 			cursor.exec(function (err, docs) {
-				console.log('get callback', err, docs)
 				if (err) {
-					options.error('get', err, req, res)
+					options.error('get', err, req, res, debug)
 				} else {
-					options.success('get', docs, req, res)
+					options.success('get', docs, req, res, debug)
 				}
 			})
 		}
@@ -170,17 +167,15 @@ module.exports = function REST (collection, options, debug) {
 	function post (req, res) {
 		console.log('post process', req.body)
 		collection.insert(req.body.query, function (err, newDoc) {
-			console.log('post callback', err, newDoc)
 			if (err) {
-				options.error('post', err, req, res)
+				options.error('post', err, req, res, debug)
 			} else {
-				options.success('post', newDoc, req, res)
+				options.success('post', newDoc, req, res, debug)
 			}
 		})
 	}
 
 	function put (req, res) {
-		console.log('put process', req.body)
 		var putopts = {}
 		
 		req.body.query = fixRegex(req.body.query)
@@ -192,33 +187,30 @@ module.exports = function REST (collection, options, debug) {
 			putopts.multi = true
 			
 		collection.update(req.body.query || {}, req.body.update, putopts, function (err, count, newDoc) {
-			console.log('put callback', err, count, newDoc)
 			if (err) {
 				options.error('post', err, req, res)
 			} else {
 				if (newDoc) {
 					data.newDoc = newDoc
-					options.success('put', {count: count, newDoc: newDoc}, req, res)
+					options.success('put', {count: count, newDoc: newDoc}, req, res, debug)
 				} else {
-					options.success('put', count, req, res)
+					options.success('put', count, req, res, debug)
 				}
 			}
 		})
 	}
 
 	function del (req, res) {
-		console.log('delete process', req.body)
 		var delopts = {}
 		
 		if (req.body.multi)
 			delopts.multi = true;
 			
 		collection.remove(req.body.query, delopts, function (err, count) {
-			console.log('del callback', err, count)
 			if (err) {
-				options.error('delete', err, req, res)
+				options.error('delete', err, req, res, debug)
 			} else {
-				options.success('delete', count, req, res)
+				options.success('delete', count, req, res, debug)
 			}
 		})
 	}
@@ -243,20 +235,19 @@ module.exports = function REST (collection, options, debug) {
 		return available
 	}).forEach(function (o) {
 		router[o.method]('/', function (req, res) {
-			
-			// Handle get/delete
-			if (o.method == 'get') {
-				req.query = JSON.parse(req.query.json)
-				req.body = req.query
-			} else {
-				req.body = JSON.parse(req.body.json)
-			}
-			
 			try {
-				if (options.validate(o.method, req, res))
+				// Handle get/delete
+				if (o.method == 'get') {
+					req.query = JSON.parse(req.query.json)
+					req.body = req.query
+				} else {
+					req.body = JSON.parse(req.body.json)
+				}
+
+				if (options.validate(o.method, req, res, debug))
 					o.action(req, res)
 			} catch (err) {
-				options.internalError(o.method, err, req, res)
+				options.internalError(o.method, err, req, res, debug)
 			}
 		})
 	})
