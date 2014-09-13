@@ -363,7 +363,7 @@ I haven't tested it yet... let me know if you do!
 
 ###Related modules
 
-* (nedb)[https://github.com/louischatriot/nedb]: The awesome work that motivated all this project
+* [nedb](https://github.com/louischatriot/nedb): The awesome work that motivated all this project
 
 ###Contributions
 
