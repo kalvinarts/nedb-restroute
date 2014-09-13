@@ -308,7 +308,7 @@ Or for multiple documents:
 	},
 	"multi": true
 }
-````
+```
 
 See the [nedb documentation](https://github.com/louischatriot/nedb#updating-documents) if you are not sure of how updates work.
 
