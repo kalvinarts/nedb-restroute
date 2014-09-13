@@ -244,7 +244,7 @@ Get the number of people older than 18:
 ````
 
 Get the names of the people younger than 30 an limit output to 50 filtering out the `_id` field:
-```javascript
+```json
 {
 	"query": {
 		"age": {"$lt": 30}
